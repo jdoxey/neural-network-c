@@ -1,5 +1,7 @@
 # Simple Neural Network written in C
 
+![Build status](https://github.com/jdoxey/neural-network-c/actions/workflows/main.yml/badge.svg)
+
 This is a very basic neural network implementation written with simple C.
 
 I really just created this to learn more about the internals of neural networks.
