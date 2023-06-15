@@ -17,7 +17,7 @@ nn_Matrix *nn_Matrix_allocWithDotProduct(nn_Matrix *inputA, nn_Matrix *inputB);
 nn_Matrix *nn_Matrix_allocWithDotProductThenFunctionApplied(nn_Matrix *inputA, nn_Matrix *inputB, double (*functionToApply)(double));
 nn_Matrix *nn_Matrix_allocByMultiplyingAfterApplyingFunctions(nn_Matrix *inputA, nn_Matrix *inputB,
 		double (*functionToApplyA)(double, double), double (*functionToApplyB)(double, double));
-nn_Matrix *nn_Matrix_free(nn_Matrix *this);
+void nn_Matrix_free(nn_Matrix *this);
 double nn_Matrix_get(nn_Matrix *this, int row, int column);
 void nn_Matrix_set(nn_Matrix *this, int row, int column, double value);
 void nn_Matrix_fillWithValues(nn_Matrix *this, ...);

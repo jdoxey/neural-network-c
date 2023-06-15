@@ -65,7 +65,7 @@ nn_Matrix *nn_Matrix_allocByMultiplyingAfterApplyingFunctions(nn_Matrix *inputA,
 	return this;
 }
 
-nn_Matrix *nn_Matrix_free(nn_Matrix *this) {
+void nn_Matrix_free(nn_Matrix *this) {
 	free(this->data);
 	free(this);
 }
