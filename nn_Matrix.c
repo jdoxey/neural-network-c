@@ -70,13 +70,6 @@ void nn_Matrix_free(nn_Matrix *this) {
 	free(this);
 }
 
-nn_Matrix *nn_Matrix_updateEachElementWithFunction(nn_Matrix *this, double (*updateFunction)(double)) {
-	int totalSize = this->rows * this->columns;
-	for (int i = 0; i < totalSize; i++) {
-		this->data[i] = updateFunction(this->data[i]);
-	}
-}
-
 double nn_Matrix_get(nn_Matrix *this, int row, int column) {
 	return this->data[this->columns * row + column];
 }
