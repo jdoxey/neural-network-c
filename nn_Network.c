@@ -133,7 +133,7 @@ double nn_Network_train(nn_Network *this, nn_Matrix *trainingDataInputs, nn_Matr
 	// Updates are calculated during backwards pass, but not applied until after the backward pass is complete.
 
 	// Allocate some space to store the updates while the backward pass is in progress.
-	nn_Matrix *layerUpdates[this->numberOfLayers];
+	nn_Matrix **layerUpdates = malloc(sizeof(nn_Matrix *) * this->numberOfLayers);
 
 	nn_Matrix *deltas = NULL;
 	nn_Matrix *previousDeltas = NULL;
@@ -196,6 +196,7 @@ double nn_Network_train(nn_Network *this, nn_Matrix *trainingDataInputs, nn_Matr
 		}
 		nn_Matrix_free(layerUpdates[layer]);
 	}
+	free(layerUpdates);
 
 	return averageCost;
 }
