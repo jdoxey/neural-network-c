@@ -1,6 +1,6 @@
 # Simple Neural Network written in C
 
-![Build status](https://github.com/jdoxey/neural-network-c/actions/workflows/main.yml/badge.svg)
+![Build status](https://github.com/jdoxey/neural-network-c/actions/workflows/main.yml/badge.svg) (LLVM on macOS, GCC on Linux, MSVC on Windows)
 
 This is a very basic neural network implementation written with simple C.
 
