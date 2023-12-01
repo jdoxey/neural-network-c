@@ -106,8 +106,10 @@ nn_Matrix *nn_Network_inferenceWithValuesArgp(nn_Network *this, va_list argp) {
 
 // inferenceForTraining keeps the outputs/activations from each layer.
 nn_Matrix *nn_Network_inferenceForTraining(nn_Network *this, nn_Matrix *inputs) {
-	// allocate memory for activations at each layer
-	this->layerActivations = malloc(sizeof(nn_Matrix *) * this->numberOfLayers);
+	// allocate memory for activations at each layer (if not already allocated)
+	if (this->layerActivations == NULL) {
+		this->layerActivations = calloc(this->numberOfLayers, sizeof(nn_Network *));
+	}
 	this->layerActivations[0] = inputs;
 	// Increment through each layer 'forwards', calculating the intermediate weightedSums,
 	// and activations which are stored for back propagation.
@@ -115,8 +117,14 @@ nn_Matrix *nn_Network_inferenceForTraining(nn_Network *this, nn_Matrix *inputs) 
 	for (int l = 1; l < this->numberOfLayers; l++) {
 		// Calculate the weighted sums (dot product) of previous layer activations and weights at this level,
 		// then calculate the 'activation' value by applying the sigmoid function to the result.
-		this->layerActivations[l] = nn_Matrix_allocWithDotProductThenFunctionApplied(
-				this->layerActivations[l - 1], this->layerWeights[l], nn_Network__sigmoid);
+		if (this->layerActivations[l] == NULL) {
+			this->layerActivations[l] = nn_Matrix_allocWithDotProductThenFunctionApplied(
+					this->layerActivations[l - 1], this->layerWeights[l], nn_Network__sigmoid);
+		}
+		else {
+			nn_Matrix_fillWithDotProductThenFunctionApplied(this->layerActivations[l],
+					this->layerActivations[l - 1], this->layerWeights[l], nn_Network__sigmoid);
+		}
 	}
 	return this->layerActivations[this->numberOfLayers - 1];
 }

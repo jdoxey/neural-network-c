@@ -35,6 +35,11 @@ nn_Matrix *nn_Matrix_allocWithDotProduct(nn_Matrix *inputA, nn_Matrix *inputB) {
 
 nn_Matrix *nn_Matrix_allocWithDotProductThenFunctionApplied(nn_Matrix *inputA, nn_Matrix *inputB, double (*functionToApply)(double)) {
 	nn_Matrix *this = nn_Matrix_alloc(inputA->rows, inputB->columns);
+	nn_Matrix_fillWithDotProductThenFunctionApplied(this, inputA, inputB, functionToApply);
+	return this;
+}
+
+void nn_Matrix_fillWithDotProductThenFunctionApplied(nn_Matrix *this, nn_Matrix *inputA, nn_Matrix *inputB, double (*functionToApply)(double)) {
 	// iterate through each row of input A, each one will correspond to a row in the output matrix
 	for (int inputARow = 0; inputARow < inputA->rows; inputARow++) {
 		// calculate the weighted sum for each column at this row, each of these columns will correspond to a column in the output matrix
@@ -51,7 +56,6 @@ nn_Matrix *nn_Matrix_allocWithDotProductThenFunctionApplied(nn_Matrix *inputA, n
 			nn_Matrix_set(this, inputARow, inputBColumn, total);
 		}
 	}
-	return this;
 }
 
 nn_Matrix *nn_Matrix_allocByMultiplyingAfterApplyingFunctions(nn_Matrix *inputA, nn_Matrix *inputB,

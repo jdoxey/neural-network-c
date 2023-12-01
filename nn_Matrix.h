@@ -22,6 +22,7 @@ double nn_Matrix_get(nn_Matrix *this, int row, int column);
 void nn_Matrix_set(nn_Matrix *this, int row, int column, double value);
 void nn_Matrix_fillWithValues(nn_Matrix *this, ...);
 void nn_Matrix_fillWithValuesArgp(nn_Matrix *this, va_list argp);
+void nn_Matrix_fillWithDotProductThenFunctionApplied(nn_Matrix *this, nn_Matrix *inputA, nn_Matrix *inputB, double (*functionToApply)(double));
 double nn_Matrix_singleAverageAfterApplyingFunction(nn_Matrix *this, nn_Matrix *other, double (*functionToApply)(double, double));
 void nn_Matrix_print(nn_Matrix *this);
 
