@@ -3,7 +3,7 @@
 #include <stdarg.h>	// va_list, va_start, va_arg
 #include <time.h>	// time
 #include <math.h>	// exp
-#include <stdio.h>	// printf
+#include <stdio.h>	// printf, fopen
 
 #include "nn_Network.h"
 
@@ -232,6 +232,36 @@ void nn_Network_randomiseWeightsBetweenMinAndMax(nn_Network *this, double min, d
 			}
 		}
 	}
+}
+
+// File format is
+// - int (numberOfLayers)
+// for each layer except input layer
+// - int (rows)
+// - int (columns)
+// - array/sequence of doubles (amount of doubles is: rows x columns)
+bool nn_Network_writeToFile(nn_Network *this, char *filename) {
+	FILE *file = fopen(filename, "w");
+	if (file == NULL) {
+		printf("Error opening file '%s' to write weights to.", filename);
+		return false;
+	}
+
+	fwrite(&(this->numberOfLayers), sizeof(int), 1, file);
+	// below starts at 1 because input layer doesn't have weights
+	for (int l = 1; l < this->numberOfLayers; l++) {
+		nn_Matrix *layerWeights = this->layerWeights[l];
+		fwrite(&(layerWeights->rows), sizeof(int), 1, file);
+		fwrite(&(layerWeights->columns), sizeof(int), 1, file);
+		fwrite(layerWeights->data,
+				sizeof(double),
+				layerWeights->rows * layerWeights->columns,
+				file);
+	}
+
+	fclose(file);
+
+	return true;
 }
 
 double nn_Network__sigmoid(double input) {

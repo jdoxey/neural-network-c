@@ -129,5 +129,63 @@ int main() {
 		nn_Network_free(network);
 	}
 
+	// Test nn_Network_writeToFile, scenario: basic
+	{
+		nn_Network *network = nn_Network_alloc("2, 3, 2");
+		nn_Matrix_fillWithValues(network->layerWeights[1],
+			-2.0, 0.0, 2.0,
+			-1.0, 1.0, -2.0
+		);
+		nn_Matrix_fillWithValues(network->layerWeights[2],
+			-1.0, 2.0,
+			0.0, -2.0,
+			1.0, -1.0
+		);
+		nn_Network_writeToFile(network, "tmp.nn");
+
+		FILE *file = fopen("tmp.nn", "r");
+
+		int numberOfLayers;
+		fread(&numberOfLayers, sizeof(int), 1, file);
+		assert(numberOfLayers == 3);
+
+		int layer1rows;
+		fread(&layer1rows, sizeof(int), 1, file);
+		assert(layer1rows == 2);
+
+		int layer1columns;
+		fread(&layer1columns, sizeof(int), 1, file);
+		assert(layer1columns == 3);
+
+		double value[6];
+		fread(value, sizeof(double), 6, file);
+		assert(value[0] == -2.0);
+		assert(value[1] == 0.0);
+		assert(value[2] == 2.0);
+		assert(value[3] == -1.0);
+		assert(value[4] == 1.0);
+		assert(value[5] == -2.0);
+
+		int layer2rows;
+		fread(&layer2rows, sizeof(int), 1, file);
+		assert(layer2rows == 3);
+
+		int layer2columns;
+		fread(&layer2columns, sizeof(int), 1, file);
+		assert(layer2columns == 2);
+
+		fread(value, sizeof(double), 6, file);
+		assert(value[0] == -1.0);
+		assert(value[1] == 2.0);
+		assert(value[2] == 0.0);
+		assert(value[3] == -2.0);
+		assert(value[4] == 1.0);
+		assert(value[5] == -1.0);
+
+		fclose(file);
+
+		remove("tmp.nn");
+	}
+
 	return 0;
 }

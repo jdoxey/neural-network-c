@@ -2,7 +2,8 @@
 #define __NN_NETWORK_H__
 
 
-#include "stdarg.h"	// va_list
+#include <stdarg.h>	// va_list
+#include <stdbool.h>	// bool, true, false
 
 #include "nn_Matrix.h"
 
@@ -25,5 +26,6 @@ double nn_Network_train(nn_Network *this, nn_Matrix *trainingDataInputs, nn_Matr
 int nn_Network_numberOfNodesAtLayerIndex(nn_Network *this, int layerIndex);
 void nn_Network_randomiseWeightsBetweenMinAndMax(nn_Network *this, double min, double max);
 
+bool nn_Network_writeToFile(nn_Network *this, char *filename);
 
 #endif
