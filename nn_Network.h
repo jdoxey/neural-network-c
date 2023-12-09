@@ -15,6 +15,7 @@ typedef struct {
 } nn_Network;
 
 nn_Network *nn_Network_alloc(char *layout);
+nn_Network *nn_Network_allocFromFile(char *filename);
 void nn_Network_free(nn_Network *this);
 
 nn_Matrix *nn_Network_inference(nn_Network *this, nn_Matrix *inputs);

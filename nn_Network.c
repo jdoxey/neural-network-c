@@ -55,6 +55,43 @@ nn_Network *nn_Network_alloc(char *layout) {
 	return this;
 }
 
+// File format is:
+// - int (numberOfLayers)
+// for each layer, except input layer (i.e. numberOfLayers - 1)
+// - int (rows)
+// - int (columns)
+// - array/sequence of doubles (amount of doubles is: rows x columns)
+// TODO: Handle corrupt file
+nn_Network *nn_Network_allocFromFile(char *filename) {
+	nn_Network *this = malloc(sizeof(nn_Network));
+	this->layerActivations = NULL;
+
+	FILE *file = fopen(filename, "r");
+	if (file == NULL) {
+		printf("Error opening file '%s' to read weights from.", filename);
+		return NULL;
+	}
+
+	fread(&(this->numberOfLayers), sizeof(int), 1, file);
+	this->layerWeights = malloc(sizeof(nn_Matrix *) * this->numberOfLayers);
+
+	int rows, columns;
+	// starts at layer 1 because there are no weights at the input layer
+	for (int l = 1; l < this->numberOfLayers; l++) {
+		fread(&rows, sizeof(int), 1, file);
+		fread(&columns, sizeof(int), 1, file);
+		if (l == 1) {
+			this->numberOfInputs = rows;
+		}
+		this->layerWeights[l] = nn_Matrix_alloc(rows, columns);
+		fread(this->layerWeights[l]->data, sizeof(double), rows * columns, file);
+	}
+
+	fclose(file);
+
+	return this;
+}
+
 void nn_Network_free(nn_Network *this) {
 	// Starts at 1 because we didn't allocate weights for the first layer
 	for (int l = 1; l < this->numberOfLayers; l++) {
@@ -234,9 +271,9 @@ void nn_Network_randomiseWeightsBetweenMinAndMax(nn_Network *this, double min, d
 	}
 }
 
-// File format is
+// File format is:
 // - int (numberOfLayers)
-// for each layer except input layer
+// for each layer, except input layer (i.e. numberOfLayers - 1)
 // - int (rows)
 // - int (columns)
 // - array/sequence of doubles (amount of doubles is: rows x columns)

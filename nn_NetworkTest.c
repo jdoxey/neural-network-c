@@ -187,5 +187,55 @@ int main() {
 		remove("tmp.nn");
 	}
 
+	// Test nn_Network_allocFromFile, scenario: basic
+	{
+		int numberOfLayers = 3;
+		int layer2Rows = 2;
+		int layer2Columns = 3;
+		double layer2Values[] = {
+			-2.0, 0.0, 2.0,
+			-1.0, 1.0, -2.0
+		};
+		int layer3Rows = 3;
+		int layer3Columns = 2;
+		double layer3Values[] = {
+			-1.0, 2.0,
+			0.0, -2.0,
+			1.0, -1.0
+		};
+
+		FILE *file = fopen("tmp.nn", "w");
+		fwrite(&numberOfLayers, sizeof(int), 1, file);
+		fwrite(&layer2Rows, sizeof(int), 1, file);
+		fwrite(&layer2Columns, sizeof(int), 1, file);
+		fwrite(layer2Values, sizeof(double), 6, file);
+		fwrite(&layer3Rows, sizeof(int), 1, file);
+		fwrite(&layer3Columns, sizeof(int), 1, file);
+		fwrite(layer3Values, sizeof(double), 6, file);
+		fclose(file);
+
+		nn_Network *network = nn_Network_allocFromFile("tmp.nn");
+		assert(network->numberOfLayers == 3);
+		assert(network->numberOfInputs == 2);
+		assert(network->layerWeights[1]->rows == 2);
+		assert(network->layerWeights[1]->columns == 3);
+		assert(nn_Matrix_get(network->layerWeights[1], 0, 0) == -2.0);
+		assert(nn_Matrix_get(network->layerWeights[1], 0, 1) == 0.0);
+		assert(nn_Matrix_get(network->layerWeights[1], 0, 2) == 2.0);
+		assert(nn_Matrix_get(network->layerWeights[1], 1, 0) == -1.0);
+		assert(nn_Matrix_get(network->layerWeights[1], 1, 1) == 1.0);
+		assert(nn_Matrix_get(network->layerWeights[1], 1, 2) == -2.0);
+		assert(network->layerWeights[2]->rows == 3);
+		assert(network->layerWeights[2]->columns == 2);
+		assert(nn_Matrix_get(network->layerWeights[2], 0, 0) == -1.0);
+		assert(nn_Matrix_get(network->layerWeights[2], 0, 1) == 2.0);
+		assert(nn_Matrix_get(network->layerWeights[2], 1, 0) == 0.0);
+		assert(nn_Matrix_get(network->layerWeights[2], 1, 1) == -2.0);
+		assert(nn_Matrix_get(network->layerWeights[2], 2, 0) == 1.0);
+		assert(nn_Matrix_get(network->layerWeights[2], 2, 1) == -1.0);
+
+		remove("tmp.nn");
+	}
+
 	return 0;
 }
