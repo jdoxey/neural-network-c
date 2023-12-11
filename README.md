@@ -13,13 +13,13 @@ I'm making it public in case anyone else finds it helpful or useful.
 - Allows abitrary number of layers, and nodes in each layer (feed-forward only)
 - Processes multiple training examples at a time
 - Good unit test coverage
+- Load and save weight values to file
 
 
 ## Improvement Potential
 
 - Include bias nodes
 - Paralellisation across CPU and/or GPU to increase speed
-- Load and save weight values
 - Choice of activation function at different layers
 
 
