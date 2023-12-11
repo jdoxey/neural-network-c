@@ -63,8 +63,23 @@ nn_Network *nn_Network_alloc(char *layout) {
 // - array/sequence of doubles (amount of doubles is: rows x columns)
 // TODO: Handle corrupt file
 nn_Network *nn_Network_allocFromFile(char *filename) {
+	// make sure there's no '.lock' file
+	char *lockFileName = malloc(sizeof(char) * (strlen(filename) + strlen(".lock") + 1));
+	sprintf(lockFileName, "%s.lock", filename);
+	FILE *lock = fopen(lockFileName, "r");
+	if (lock != NULL) {
+		free(lockFileName);
+		fclose(lock);
+		printf("Not reading from '%s' because '%s.lock' exists.\n", filename, filename);
+		return NULL;
+	}
+
 	nn_Network *this = malloc(sizeof(nn_Network));
 	this->layerActivations = NULL;
+
+	// create .lock file
+	lock = fopen(lockFileName, "w");
+	fclose(lock);
 
 	FILE *file = fopen(filename, "r");
 	if (file == NULL) {
@@ -88,6 +103,9 @@ nn_Network *nn_Network_allocFromFile(char *filename) {
 	}
 
 	fclose(file);
+
+	remove(lockFileName);
+	free(lockFileName);
 
 	return this;
 }
@@ -277,11 +295,26 @@ void nn_Network_randomiseWeightsBetweenMinAndMax(nn_Network *this, double min, d
 // - int (rows)
 // - int (columns)
 // - array/sequence of doubles (amount of doubles is: rows x columns)
-bool nn_Network_writeToFile(nn_Network *this, char *filename) {
+int nn_Network_writeToFile(nn_Network *this, char *filename) {
+	// make sure there's no '.lock' file
+	char *lockFileName = malloc(sizeof(char) * (strlen(filename) + strlen(".lock") + 1));
+	sprintf(lockFileName, "%s.lock", filename);
+	FILE *lock = fopen(lockFileName, "r");
+	if (lock != NULL) {
+		free(lockFileName);
+		fclose(lock);
+		printf("Not writing to '%s' because '%s.lock' exists.\n", filename, filename);
+		return NN_ERROR_WRITE_LOCK_FILE;
+	}
+
+	// create .lock file
+	lock = fopen(lockFileName, "w");
+	fclose(lock);
+
 	FILE *file = fopen(filename, "w");
 	if (file == NULL) {
-		printf("Error opening file '%s' to write weights to.", filename);
-		return false;
+		printf("Error opening file '%s' to write weights to.\n", filename);
+		return NN_ERROR_WRITE_FOPEN_FAIL;
 	}
 
 	fwrite(&(this->numberOfLayers), sizeof(int), 1, file);
@@ -295,10 +328,12 @@ bool nn_Network_writeToFile(nn_Network *this, char *filename) {
 				layerWeights->rows * layerWeights->columns,
 				file);
 	}
-
 	fclose(file);
 
-	return true;
+	remove(lockFileName);
+	free(lockFileName);
+
+	return 0;
 }
 
 double nn_Network__sigmoid(double input) {

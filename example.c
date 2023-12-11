@@ -29,8 +29,6 @@ int main() {
 	}
 	printf("Final error: %lf\n", error);
 
-	nn_Network_writeToFile(network, "network.nn");
-
 	nn_Matrix *output;
 	output = nn_Network_inferenceWithValues(network, 0.0, 0.0);
 	printf("Output for values 0, 0 is %lf\n", nn_Matrix_get(output, 0, 0));

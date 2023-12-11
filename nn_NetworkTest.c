@@ -141,7 +141,8 @@ int main() {
 			0.0, -2.0,
 			1.0, -1.0
 		);
-		nn_Network_writeToFile(network, "tmp.nn");
+		int writeResult = nn_Network_writeToFile(network, "tmp.nn");
+		assert(writeResult == 0);
 
 		FILE *file = fopen("tmp.nn", "r");
 
@@ -185,6 +186,28 @@ int main() {
 		fclose(file);
 
 		remove("tmp.nn");
+	}
+
+	// Test nn_Network_writeToFile, scenario: don't write if there's a .lock file
+	{
+		nn_Network *network = nn_Network_alloc("2, 3, 2");
+		nn_Matrix_fillWithValues(network->layerWeights[1],
+			-2.0, 0.0, 2.0,
+			-1.0, 1.0, -2.0
+		);
+		nn_Matrix_fillWithValues(network->layerWeights[2],
+			-1.0, 2.0,
+			0.0, -2.0,
+			1.0, -1.0
+		);
+		// create tmp.nn.lock
+		FILE *lock = fopen("tmp.nn.lock", "w");
+		fclose(lock);
+		int writeResult = nn_Network_writeToFile(network, "tmp.nn");
+		assert(writeResult == NN_ERROR_WRITE_LOCK_FILE);
+		FILE *nnFile = fopen("tmp.nn", "r");
+		assert(nnFile == NULL);
+		remove("tmp.nn.lock");
 	}
 
 	// Test nn_Network_allocFromFile, scenario: basic
@@ -235,6 +258,15 @@ int main() {
 		assert(nn_Matrix_get(network->layerWeights[2], 2, 1) == -1.0);
 
 		remove("tmp.nn");
+	}
+
+	// Test nn_Network_allocFromFile, scenario: don't read if there's a .lock file
+	{
+		FILE *lock = fopen("tmp.nn.lock", "w");
+		fclose(lock);
+		nn_Network *network = nn_Network_allocFromFile("tmp.nn");
+		assert(network == NULL);
+		remove("tmp.nn.lock");
 	}
 
 	return 0;

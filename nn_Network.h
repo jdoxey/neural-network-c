@@ -14,6 +14,9 @@ typedef struct {
 	nn_Matrix **layerActivations;
 } nn_Network;
 
+#define NN_ERROR_WRITE_FOPEN_FAIL	1
+#define NN_ERROR_WRITE_LOCK_FILE	2
+
 nn_Network *nn_Network_alloc(char *layout);
 nn_Network *nn_Network_allocFromFile(char *filename);
 void nn_Network_free(nn_Network *this);
@@ -27,6 +30,7 @@ double nn_Network_train(nn_Network *this, nn_Matrix *trainingDataInputs, nn_Matr
 int nn_Network_numberOfNodesAtLayerIndex(nn_Network *this, int layerIndex);
 void nn_Network_randomiseWeightsBetweenMinAndMax(nn_Network *this, double min, double max);
 
-bool nn_Network_writeToFile(nn_Network *this, char *filename);
+int nn_Network_writeToFile(nn_Network *this, char *filename);
+
 
 #endif
